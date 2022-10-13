@@ -23,7 +23,7 @@ Resources:
       MasterUserPassword: "12345PassW"
       MasterUsername: "admin"
       DBClusterIdentifier: "aurora-cluster"
-      DBClusterInstanceClass: "db.t3.medium"
+      # DBClusterInstanceClass: "db.t3.medium"
       BackupRetentionPeriod: 1
       DBInstanceParameterGroupName: !Ref RDSDBParameterGroup
 

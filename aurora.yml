@@ -1,0 +1,87 @@
+Description: RDS Aurora
+Parameters:
+  Timer:
+    Type: Number
+    MinValue: 3
+    Default: 20
+
+
+Resources:
+  Fn::Transform:
+    Name: AWS::Include
+    Parameters:
+      Location: s3://morita-custom-cfn/delete.yml
+
+  RDSCluster: 
+    Type: "AWS::RDS::DBCluster"
+    Properties: 
+      DBClusterParameterGroupName: 
+        Ref: RDSDBClusterParameterGroup
+      DBSubnetGroupName: 
+        Ref: subnetGroup
+      Engine: aurora-mysql
+      MasterUserPassword: "12345PassW"
+      MasterUsername: "admin"
+      DBClusterIdentifier: "aurora-cluster"
+      DBClusterInstanceClass: "db.t3.medium"
+      BackupRetentionPeriod: 1
+      DBInstanceParameterGroupName: !Ref RDSDBParameterGroup
+
+      # VpcSecurityGroupIds:
+      #   - 
+    
+  RDSDBClusterParameterGroup: 
+    Type: "AWS::RDS::DBClusterParameterGroup"
+    Properties: 
+      Description: "CloudFormation Sample Aurora Cluster Parameter Group"
+      Family: aurora-mysql5.7
+      Parameters: 
+        time_zone: Asia/Tokyo	
+    
+  RDSDBInstance1: 
+    Type: "AWS::RDS::DBInstance"
+    Properties: 
+      AvailabilityZone: ap-northeast-1d
+      DBClusterIdentifier: 
+        Ref: RDSCluster
+      # DBInstanceClass: db.t3.medium
+      # DBParameterGroupName: 
+      #   Ref: RDSDBParameterGroup
+      # DBSubnetGroupName: 
+      #   Ref: subnetGroup
+      Engine: aurora-mysql
+      PubliclyAccessible: "true"
+    
+  RDSDBInstance2:
+    Type: "AWS::RDS::DBInstance" 
+    Properties: 
+      AvailabilityZone:  ap-northeast-1c
+      DBClusterIdentifier: 
+        Ref: RDSCluster
+      # DBInstanceClass: db.t3.medium
+      DBParameterGroupName: 
+        Ref: RDSDBParameterGroup
+      # DBSubnetGroupName: 
+      #   Ref: subnetGroup
+      Engine: aurora-mysql
+      PubliclyAccessible: "true"
+    
+
+  RDSDBParameterGroup:
+    Type: 'AWS::RDS::DBParameterGroup'
+    Properties:
+      Description: CloudFormation Sample Aurora Parameter Group
+      Family: aurora-mysql5.7
+      Parameters:
+        sql_mode: IGNORE_SPACE
+        max_allowed_packet: 1024
+        innodb_buffer_pool_size: '{DBInstanceClassMemory*3/4}'
+
+  subnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties: 
+      DBSubnetGroupDescription: aaaa
+      DBSubnetGroupName: aaaabbbccddd
+      SubnetIds: 
+        - subnet-03ef7b69036553f20
+        - subnet-04f74374c45fedb57

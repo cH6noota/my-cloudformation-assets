@@ -3,7 +3,7 @@ Parameters:
   Timer:
     Type: Number
     MinValue: 3
-    Default: 20
+    Default: 30
 
 
 Resources:
@@ -22,10 +22,13 @@ Resources:
       Engine: aurora-mysql
       MasterUserPassword: "12345PassW"
       MasterUsername: "admin"
-      DBClusterIdentifier: "aurora-cluster"
+      DBClusterIdentifier: !Sub
+          - ${stackName}-aurora-cluster
+          - { stackName: !Ref AWS::StackName }
       # DBClusterInstanceClass: "db.t3.medium"
       BackupRetentionPeriod: 1
       DBInstanceParameterGroupName: !Ref RDSDBParameterGroup
+      
 
       # VpcSecurityGroupIds:
       #   - 
@@ -44,7 +47,7 @@ Resources:
       AvailabilityZone: ap-northeast-1d
       DBClusterIdentifier: 
         Ref: RDSCluster
-      # DBInstanceClass: db.t3.medium
+      DBInstanceClass: db.t3.medium
       # DBParameterGroupName: 
       #   Ref: RDSDBParameterGroup
       # DBSubnetGroupName: 
@@ -58,13 +61,14 @@ Resources:
       AvailabilityZone:  ap-northeast-1c
       DBClusterIdentifier: 
         Ref: RDSCluster
-      # DBInstanceClass: db.t3.medium
+      DBInstanceClass: db.t3.medium
       DBParameterGroupName: 
         Ref: RDSDBParameterGroup
       # DBSubnetGroupName: 
       #   Ref: subnetGroup
       Engine: aurora-mysql
       PubliclyAccessible: "true"
+      SourceDBInstanceIdentifier: !Ref RDSDBInstance1
     
 
   RDSDBParameterGroup:
@@ -81,7 +85,9 @@ Resources:
     Type: AWS::RDS::DBSubnetGroup
     Properties: 
       DBSubnetGroupDescription: aaaa
-      DBSubnetGroupName: aaaabbbccddd
+      DBSubnetGroupName: !Sub
+          - ${stackName}-subnetGroup
+          - { stackName: !Ref AWS::StackName }
       SubnetIds: 
         - subnet-03ef7b69036553f20
         - subnet-04f74374c45fedb57
